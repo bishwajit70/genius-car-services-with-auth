@@ -4,7 +4,7 @@
     padding: 20px 0px;
 
 }
-.register-form input{
+.register-form input:not([type=checkbox]){
     display: block;
     width: 100%;
     padding: 10px;
