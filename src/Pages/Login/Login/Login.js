@@ -3,7 +3,10 @@ import { Button, Form } from 'react-bootstrap';
 import { useSignInWithEmailAndPassword, useSendPasswordResetEmail } from 'react-firebase-hooks/auth';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import auth from '../../../firebase.init';
+import Loading from '../../Shared/Loading/Loading';
 import SocialLogin from '../SocialLogin/SocialLogin';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Login = () => {
     const emailRef = useRef('')
@@ -24,6 +27,9 @@ const Login = () => {
     if (user) {
         navigate(from, { replace: true });
     }
+    if (loading || sending) {
+        return <Loading></Loading>
+    }
 
     if (error) {
         errorElement = <p className='text-danger'>Error: {error?.message}</p>;
@@ -43,8 +49,13 @@ const Login = () => {
 
     const resetPassword = async () => {
         const email = emailRef.current.value;
-        await sendPasswordResetEmail(email);
-        alert('Sent email');
+        if (email) {
+            await sendPasswordResetEmail(email);
+            toast('Sent email');
+        }
+        else {
+            toast('Please enter your email address')
+        }
     }
 
     return (
@@ -59,15 +70,16 @@ const Login = () => {
                     <Form.Group className="mb-3" controlId="formBasicPassword">
                         <Form.Control ref={passwordRef} type="password" placeholder="Password" required />
                     </Form.Group>
-                    
+
                     <Button className='mb-2 d-block w-50 mx-auto' variant="primary" type="submit">
                         Login
                     </Button>
                 </Form>
                 {errorElement}
                 <p>New to Genius Car? <Link to='/register' className='text-danger pe-auto text-decoration-none' onClick={navigateRegister}>Please Register</Link></p>
-                <p>Forget Password? <Link to='/login' className='text-primary pe-auto text-decoration-none' onClick={resetPassword}>Reset Password</Link></p>
+                <p>Forget Password? <button to='/login' className='btn btn-link pe-auto text-decoration-none' onClick={resetPassword}>Reset Password</button></p>
                 <SocialLogin></SocialLogin>
+                <ToastContainer />
             </div>
 
         </div>
